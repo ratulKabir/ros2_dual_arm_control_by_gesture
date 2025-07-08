@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from collections import deque
 import mediapipe as mp
-from utils.utils_v2 import get_idx_to_coordinates
+from hand_gesture_capture.utils.utils_v2 import get_idx_to_coordinates
 
 mp_hands = mp.solutions.hands
 
