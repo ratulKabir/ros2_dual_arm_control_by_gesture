@@ -1,0 +1,37 @@
+# ROS2 build and install folders
+/build/
+/install/
+/log/
+
+# Colcon build artifacts
+colcon*.log
+colcon*.meta
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# CMake build artifacts
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ROS2 launch, params, and config logs
+*.launch.pyc
+*.params.pyc
+*.yamlc
+
+# VSCode settings
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Other
+*.swp
+*.swo
+*.bak
+*.orig
+*.tmp
