@@ -18,8 +18,11 @@ def main():
 
     cap = cv2.VideoCapture(0)
 
-    pts_left = deque(maxlen=64)
-    pts_right = deque(maxlen=64)
+    # Trails for each fingertip per hand
+    pts_left_index = deque(maxlen=64)
+    pts_left_thumb = deque(maxlen=64)
+    pts_right_index = deque(maxlen=64)
+    pts_right_thumb = deque(maxlen=64)
 
     while cap.isOpened():
         ret, image = cap.read()
@@ -46,21 +49,33 @@ def main():
 
                 idx_to_coordinates = get_idx_to_coordinates(image, hand_landmarks)
 
-                if 8 in idx_to_coordinates:
+                if 8 in idx_to_coordinates:  # Index tip
                     if label == 'Left':
-                        pts_left.appendleft(idx_to_coordinates[8])
-                    elif label == 'Right':
-                        pts_right.appendleft(idx_to_coordinates[8])
+                        pts_left_index.appendleft(idx_to_coordinates[8])
+                    else:
+                        pts_right_index.appendleft(idx_to_coordinates[8])
+                if 4 in idx_to_coordinates:  # Thumb tip
+                    if label == 'Left':
+                        pts_left_thumb.appendleft(idx_to_coordinates[4])
+                    else:
+                        pts_right_thumb.appendleft(idx_to_coordinates[4])
 
-        # Draw trail lines
-        for pts, color in zip([pts_left, pts_right], [(255, 0, 0), (0, 255, 0)]):  # Blue: Left, Green: Right
+        # Draw trails
+        trails = [
+            (pts_left_index, (255, 0, 0)),   # Blue
+            (pts_left_thumb, (255, 0, 0)),
+            (pts_right_index, (0, 255, 0)),  # Green
+            (pts_right_thumb, (0, 255, 0)),
+        ]
+
+        for pts, color in trails:
             for i in range(1, len(pts)):
                 if pts[i - 1] is None or pts[i] is None:
                     continue
                 thickness = int(np.sqrt(len(pts) / float(i + 1)) * 4.5)
                 cv2.line(image, pts[i - 1], pts[i], color, thickness)
 
-        cv2.imshow("Hands Tracker", rescale_frame(image, percent=130))
+        cv2.imshow("Hand Tracker - Index + Thumb", rescale_frame(image, percent=130))
 
         if cv2.waitKey(5) & 0xFF == 27:
             break
