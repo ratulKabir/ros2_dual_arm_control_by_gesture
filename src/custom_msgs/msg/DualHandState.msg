@@ -1,0 +1,2 @@
+custom_msgs/HandState left_hand
+custom_msgs/HandState right_hand
