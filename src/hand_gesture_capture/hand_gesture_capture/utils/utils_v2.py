@@ -1,16 +1,13 @@
 from mediapipe.python.solutions.drawing_utils import _normalized_to_pixel_coordinates
 import cv2
 
-
-def get_idx_to_coordinates(image, results, VISIBILITY_THRESHOLD=0.5, PRESENCE_THRESHOLD=0.5):
+def get_idx_to_coordinates(image, hand_landmarks, VISIBILITY_THRESHOLD=0.5, PRESENCE_THRESHOLD=0.5):
     idx_to_coordinates = {}
     image_rows, image_cols, _ = image.shape
     try:
-        for idx, landmark in enumerate(results.multi_hand_landmarks[0].landmark):
-            if ((landmark.HasField('visibility') and
-                 landmark.visibility < VISIBILITY_THRESHOLD) or
-                    (landmark.HasField('presence') and
-                     landmark.presence < PRESENCE_THRESHOLD)):
+        for idx, landmark in enumerate(hand_landmarks.landmark):
+            if ((landmark.HasField('visibility') and landmark.visibility < VISIBILITY_THRESHOLD) or
+                (landmark.HasField('presence') and landmark.presence < PRESENCE_THRESHOLD)):
                 continue
             landmark_px = _normalized_to_pixel_coordinates(landmark.x, landmark.y,
                                                            image_cols, image_rows)
@@ -19,6 +16,7 @@ def get_idx_to_coordinates(image, results, VISIBILITY_THRESHOLD=0.5, PRESENCE_TH
     except:
         pass
     return idx_to_coordinates
+
 
 
 def rescale_frame(frame, percent=75):
