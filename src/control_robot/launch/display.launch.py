@@ -6,8 +6,8 @@ import os
 
 def generate_launch_description():
     pkg_share = FindPackageShare('control_robot')
-    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', '2dof.urdf'])
-    rviz_path = PathJoinSubstitution([pkg_share, 'urdf', 'simple_2dof.rviz'])
+    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', '6dof.urdf'])
+    # rviz_path = PathJoinSubstitution([pkg_share, 'urdf', 'simple_2dof.rviz'])
 
     return LaunchDescription([
         Node(
@@ -30,6 +30,6 @@ def generate_launch_description():
             executable='rviz2',
             name='rviz2',
             output='screen',
-            arguments=['-d', rviz_path],
+            # arguments=['-d', rviz_path],
         ),
     ])
