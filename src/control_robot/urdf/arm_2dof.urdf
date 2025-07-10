@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="2dof">
+<robot name="arm_2dof">
 
   <!-- Base link -->
   <link name="base_link">
