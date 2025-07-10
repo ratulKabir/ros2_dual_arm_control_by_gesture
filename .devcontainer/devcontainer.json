@@ -1,0 +1,28 @@
+{
+    "name": "MoveIt2 Development",
+    "image": "moveit/moveit2:humble-humble-tutorial-source",
+    "runArgs": [
+        "--net=host",
+        "--gpus=all",
+        "-e", "DISPLAY=${localEnv:DISPLAY}",
+        "-v", "/tmp/.X11-unix:/tmp/.X11-unix",
+        "--device=/dev/video0",
+        "--device=/dev/video1",
+        "--device=/dev/video2",
+        "--device=/dev/video3"
+    ],
+    "workspaceFolder": "/root/ws_moveit2",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/root/ws_moveit2,type=bind",
+    "postCreateCommand": "apt-get update && apt-get install -y python3-opencv python3-pip && pip3 install mediapipe numpy",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "ms-python.python",
+                "ms-vscode.vscode-ros"
+            ]
+        }
+    },
+    "remoteUser": "root"
+}
