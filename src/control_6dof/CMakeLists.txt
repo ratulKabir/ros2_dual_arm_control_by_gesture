@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(arm_6dof_moveit_config)
+project(control_6dof)
 
 find_package(ament_cmake REQUIRED)
 
