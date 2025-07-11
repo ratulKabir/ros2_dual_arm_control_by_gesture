@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<robot name="arm_6dof">
+
+  <link name="base_link">
+    <visual><geometry><box size="0.2 0.2 0.05"/></geometry></visual>
+    <collision><geometry><box size="0.2 0.2 0.05"/></geometry></collision>
+  </link>
+
+  <!-- Joint 1 -->
+  <joint name="joint1" type="revolute">
+    <origin xyz="0 0 0.05"/><axis xyz="0 0 1"/>
+    <parent link="base_link"/><child link="link1"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link1">
+    <visual><origin xyz="0.15 0 0"/><geometry><box size="0.3 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.15 0 0"/><geometry><box size="0.3 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <joint name="joint2" type="revolute">
+    <origin xyz="0.3 0 0"/><axis xyz="0 0 1"/>
+    <parent link="link1"/><child link="link2"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link2">
+    <visual><origin xyz="0.2 0 0"/><geometry><box size="0.4 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.2 0 0"/><geometry><box size="0.4 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <joint name="joint3" type="revolute">
+    <origin xyz="0.4 0 0"/><axis xyz="0 0 1"/>
+    <parent link="link2"/><child link="link3"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link3">
+    <visual><origin xyz="0.5 0 0"/><geometry><box size="1.0 0.1 0.05"/></geometry></visual>
+    <collision><origin xyz="0.5 0 0"/><geometry><box size="1.0 0.1 0.05"/></geometry></collision>
+  </link>
+
+  <joint name="joint4" type="revolute">
+    <origin xyz="1.0 0 0"/><axis xyz="0 0 1"/>
+    <parent link="link3"/><child link="link4"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link4">
+    <visual><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <joint name="joint5" type="revolute">
+    <origin xyz="0.2 0 0"/><axis xyz="0 0 1"/>
+    <parent link="link4"/><child link="link5"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link5">
+    <visual><origin xyz="0.2 0 0"/><geometry><box size="0.4 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.2 0 0"/><geometry><box size="0.4 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <joint name="joint6" type="revolute">
+    <origin xyz="0.4 0 0"/><axis xyz="1 0 0"/>
+    <parent link="link5"/><child link="link6"/>
+    <limit effort="1" velocity="1.0" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link6">
+    <visual><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <!-- Palm and Gripper -->
+  <joint name="gripper_base_joint" type="fixed">
+    <origin xyz="0.2 0 0"/><parent link="link6"/><child link="palm_link"/>
+  </joint>
+  <link name="palm_link">
+    <visual><geometry><box size="0.1 0.1 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.1 0.1 0.02"/></geometry></collision>
+  </link>
+
+  <joint name="left_finger_joint" type="prismatic">
+    <origin xyz="0.15 0.05 0"/><axis xyz="0 -1 0"/>
+    <parent link="palm_link"/><child link="left_finger"/>
+    <limit lower="0" upper="0.03" effort="1" velocity="0.1"/>
+  </joint>
+  <link name="left_finger">
+    <visual><geometry><box size="0.3 0.04 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.3 0.04 0.02"/></geometry></collision>
+  </link>
+
+  <joint name="right_finger_joint" type="prismatic">
+    <origin xyz="0.15 -0.05 0"/><axis xyz="0 1 0"/>
+    <parent link="palm_link"/><child link="right_finger"/>
+    <limit lower="0" upper="0.03" effort="1" velocity="0.1"/>
+  </joint>
+  <link name="right_finger">
+    <visual><geometry><box size="0.3 0.04 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.3 0.04 0.02"/></geometry></collision>
+  </link>
+
+
+  <ros2_control name="FakeArmSystem" type="system">
+    <hardware>
+      <plugin>fake_components/GenericSystem</plugin>
+    </hardware>
+
+    <!-- Arm joints -->
+    <joint name="joint1">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint2">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint3">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint4">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint5">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="joint6">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- Gripper joints -->
+    <joint name="left_finger_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="right_finger_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+</robot>

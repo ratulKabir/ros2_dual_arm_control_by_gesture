@@ -5,8 +5,8 @@ import os
 
 def generate_launch_description():
     pkg_share = FindPackageShare('control_robot').find('control_robot')
-    urdf_file = os.path.join(pkg_share, 'urdf', 'arm_6dof.urdf')
-    rviz_config_file = os.path.join(pkg_share, 'config', '6dof.rviz')
+    urdf_file = os.path.join(pkg_share, 'urdf', 'arm_6dof_new.urdf')
+    rviz_config_file = os.path.join(pkg_share, 'config', 'arm_6dof_new.rviz')
 
     return LaunchDescription([
         Node(

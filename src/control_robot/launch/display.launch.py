@@ -6,7 +6,7 @@ import os
 
 def generate_launch_description():
     pkg_share = FindPackageShare('control_robot')
-    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', '6dof.urdf'])
+    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', 'arm_6dof_new.xacro'])
     # rviz_path = PathJoinSubstitution([pkg_share, 'urdf', 'simple_2dof.rviz'])
 
     return LaunchDescription([
@@ -15,8 +15,11 @@ def generate_launch_description():
             executable='robot_state_publisher',
             name='robot_state_publisher',
             output='screen',
+            # parameters=[{
+            #     'robot_description': Command([FindExecutable(name='cat'), ' ', urdf_path])
+            # }]
             parameters=[{
-                'robot_description': Command([FindExecutable(name='cat'), ' ', urdf_path])
+                'robot_description': Command([FindExecutable(name='xacro'), ' ', urdf_path])
             }]
         ),
         Node(

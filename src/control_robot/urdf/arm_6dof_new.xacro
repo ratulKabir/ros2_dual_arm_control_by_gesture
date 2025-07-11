@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="arm_6dof">
+
+  <!-- Common properties -->
+  <xacro:property name="effort" value="1"/>
+  <xacro:property name="velocity" value="1.0"/>
+  <xacro:property name="gripper_velocity" value="0.1"/>
+  <xacro:property name="gripper_limit" value="0.03"/>
+
+  <!-- Base -->
+  <link name="base_link">
+    <visual><geometry><box size="0.2 0.2 0.05"/></geometry></visual>
+    <collision><geometry><box size="0.2 0.2 0.05"/></geometry></collision>
+  </link>
+
+  <!-- Macro for arm joint and link -->
+  <xacro:macro name="arm_segment" params="joint_name parent_link child_link origin_xyz link_length link_size">
+    <joint name="${joint_name}" type="revolute">
+      <origin xyz="${origin_xyz}"/>
+      <axis xyz="0 0 1"/>
+      <parent link="${parent_link}"/>
+      <child link="${child_link}"/>
+      <limit effort="${effort}" velocity="${velocity}" lower="-3.14" upper="3.14"/>
+    </joint>
+    <link name="${child_link}">
+      <visual><origin xyz="${link_length} 0 0"/><geometry><box size="${link_size}"/></geometry></visual>
+      <collision><origin xyz="${link_length} 0 0"/><geometry><box size="${link_size}"/></geometry></collision>
+    </link>
+  </xacro:macro>
+
+  <!-- Define each joint/link -->
+  <xacro:arm_segment joint_name="joint1" parent_link="base_link" child_link="link1" origin_xyz="0 0 0.05" link_length="0.15" link_size="0.3 0.05 0.05"/>
+  <xacro:arm_segment joint_name="joint2" parent_link="link1" child_link="link2" origin_xyz="0.3 0 0" link_length="0.2" link_size="0.4 0.05 0.05"/>
+  <xacro:arm_segment joint_name="joint3" parent_link="link2" child_link="link3" origin_xyz="0.4 0 0" link_length="0.5" link_size="1.0 0.1 0.05"/>
+  <xacro:arm_segment joint_name="joint4" parent_link="link3" child_link="link4" origin_xyz="1.0 0 0" link_length="0.1" link_size="0.2 0.05 0.05"/>
+  <xacro:arm_segment joint_name="joint5" parent_link="link4" child_link="link5" origin_xyz="0.2 0 0" link_length="0.2" link_size="0.4 0.05 0.05"/>
+
+  <!-- Joint 6 (different axis) -->
+  <joint name="joint6" type="revolute">
+    <origin xyz="0.4 0 0"/><axis xyz="1 0 0"/>
+    <parent link="link5"/><child link="link6"/>
+    <limit effort="${effort}" velocity="${velocity}" lower="-3.14" upper="3.14"/>
+  </joint>
+  <link name="link6">
+    <visual><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></visual>
+    <collision><origin xyz="0.1 0 0"/><geometry><box size="0.2 0.05 0.05"/></geometry></collision>
+  </link>
+
+  <!-- Palm and gripper -->
+  <joint name="gripper_base_joint" type="fixed">
+    <origin xyz="0.2 0 0"/><parent link="link6"/><child link="palm_link"/>
+  </joint>
+  <link name="palm_link">
+    <visual><geometry><box size="0.1 0.1 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.1 0.1 0.02"/></geometry></collision>
+  </link>
+
+  <!-- Gripper fingers -->
+  <joint name="left_finger_joint" type="prismatic">
+    <origin xyz="0.15 0.05 0"/><axis xyz="0 -1 0"/>
+    <parent link="palm_link"/><child link="left_finger"/>
+    <limit lower="0" upper="${gripper_limit}" effort="${effort}" velocity="${gripper_velocity}"/>
+  </joint>
+  <link name="left_finger">
+    <visual><geometry><box size="0.3 0.04 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.3 0.04 0.02"/></geometry></collision>
+  </link>
+
+  <joint name="right_finger_joint" type="prismatic">
+    <origin xyz="0.15 -0.05 0"/><axis xyz="0 1 0"/>
+    <parent link="palm_link"/><child link="right_finger"/>
+    <limit lower="0" upper="${gripper_limit}" effort="${effort}" velocity="${gripper_velocity}"/>
+  </joint>
+  <link name="right_finger">
+    <visual><geometry><box size="0.3 0.04 0.02"/></geometry></visual>
+    <collision><geometry><box size="0.3 0.04 0.02"/></geometry></collision>
+  </link>
+
+  <!-- ros2_control block -->
+  <ros2_control name="FakeArmSystem" type="system">
+    <hardware>
+      <plugin>fake_components/GenericSystem</plugin>
+    </hardware>
+    <xacro:macro name="ros2_joint" params="name">
+      <joint name="${name}">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </xacro:macro>
+
+    <xacro:ros2_joint name="joint1"/>
+    <xacro:ros2_joint name="joint2"/>
+    <xacro:ros2_joint name="joint3"/>
+    <xacro:ros2_joint name="joint4"/>
+    <xacro:ros2_joint name="joint5"/>
+    <xacro:ros2_joint name="joint6"/>
+    <xacro:ros2_joint name="left_finger_joint"/>
+    <xacro:ros2_joint name="right_finger_joint"/>
+  </ros2_control>
+</robot>
