@@ -3,6 +3,7 @@
 /install/
 /log/
 /src/dual_arm_panda_moveit_config/
+/src/control_6dof_xacro/
 
 # Colcon build artifacts
 colcon*.log

@@ -6,7 +6,7 @@ import os
 
 def generate_launch_description():
     pkg_share = FindPackageShare('control_robot')
-    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', 'arm_6dof_new.xacro'])
+    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', 'dual_arms.xacro'])
     # rviz_path = PathJoinSubstitution([pkg_share, 'urdf', 'simple_2dof.rviz'])
 
     return LaunchDescription([
