@@ -37,19 +37,13 @@ class HandPublisher(Node):
         
         hands_detected = 0
         
-        # Only update if hand_data is not None and not empty
         if hand_data:
             for side in ['Left', 'Right']:
                 if side in hand_data and hand_data[side] is not None:
                     try:
-                        # Debug: log the grip value and its type
                         grip_value = hand_data[side].get('grip')
-                        self.get_logger().debug(f"{side} grip value: {grip_value}, type: {type(grip_value)}")
-                        
-                        # Get the appropriate hand message reference
                         hand_msg = msg.left_hand if side == 'Left' else msg.right_hand
                         
-                        # Safely extract center coordinates
                         if 'center' in hand_data[side] and hand_data[side]['center'] is not None:
                             center = hand_data[side]['center']
                             if len(center) >= 2:
@@ -59,12 +53,10 @@ class HandPublisher(Node):
                                     z=0.0
                                 )
                                 hands_detected += 1
-                                # Log when hand is detected
-                                self.get_logger().debug(f"{side} hand detected at ({center[0]:.2f}, {center[1]:.2f})")
+                                # Log the position being published
+                                self.get_logger().info(f"{side} hand position: x={center[0]:.2f}, y={center[1]:.2f}")
                         
-                        # Safely extract grip status and ensure it's a boolean
                         if grip_value is not None:
-                            # Convert to boolean explicitly
                             hand_msg.is_gripping = bool(grip_value)
                         else:
                             hand_msg.is_gripping = False
@@ -73,18 +65,13 @@ class HandPublisher(Node):
                         self.get_logger().warn(f"Error processing {side} hand data: {e}")
                         continue
         
-        # Log publishing information
         if hands_detected > 0:
             self.get_logger().info(f"Publishing dual hand state: {hands_detected} hands detected")
         else:
             self.get_logger().debug("Publishing dual hand state: no hands detected")
         
-        # Always publish the message
         self.pub.publish(msg)
-        
-        # Optional: Log that message was successfully published
         self.get_logger().debug("DualHandState message published successfully")
-
 
 def main(args=None):
     parser = argparse.ArgumentParser(description="ROS2 dual hand state publisher")

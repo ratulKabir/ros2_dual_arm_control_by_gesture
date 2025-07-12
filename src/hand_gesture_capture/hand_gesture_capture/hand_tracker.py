@@ -15,6 +15,12 @@ def euclidean(p1, p2):
     return np.linalg.norm(np.array(p1) - np.array(p2))
 
 
+def normalize_point(i, j, width=640, height=480, range_val=3.5):
+    x_norm = range_val * (2 * i - width) / width
+    y_norm = range_val * (2 * j - height) / height
+    return x_norm, y_norm
+
+
 class HandTracker:
     def __init__(self, on_update_callback=None, threshold=40, visualize=True):
         self.hands = mp_hands.Hands(max_num_hands=2,
@@ -41,6 +47,7 @@ class HandTracker:
             results = self.hands.process(image_rgb)
             image = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR)
 
+            height, width, _ = image.shape
             hand_data = {}
 
             if results.multi_hand_landmarks and results.multi_handedness:
@@ -54,7 +61,12 @@ class HandTracker:
                         center = midpoint(p_index, p_thumb)
                         dist = euclidean(p_index, p_thumb)
                         grip = dist < self.threshold
-                        hand_data[label] = {"center": center, "grip": grip}
+                        x_norm, y_norm = normalize_point(center[0], center[1], width=width, height=height)
+                        hand_data[label] = {
+                            "center": (x_norm, y_norm),
+                            "grip": grip,
+                            "normalized": (x_norm, y_norm)
+                        }
 
                         if self.visualize:
                             if label == 'Left':
@@ -81,6 +93,13 @@ class HandTracker:
                         cv2.putText(image, f"{label}: {status}", (pts[0][0] + 10, pts[0][1] - 10),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
 
+                        # Draw normalized coordinates
+                        norm_xy = hand_data.get(label, {}).get("normalized", None)
+                        if norm_xy:
+                            norm_text = f"({norm_xy[0]:.2f}, {norm_xy[1]:.2f})"
+                            cv2.putText(image, norm_text, (pts[0][0] + 10, pts[0][1] + 20),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+
                 cv2.imshow("Hand Tracker", image)
                 if cv2.waitKey(5) & 0xFF == 27:
                     break
@@ -89,6 +108,7 @@ class HandTracker:
         self.cap.release()
         if self.visualize:
             cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     def print_hand_data(data):
