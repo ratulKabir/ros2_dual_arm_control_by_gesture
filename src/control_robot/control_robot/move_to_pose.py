@@ -21,7 +21,7 @@ class DynamicGoalNode(Node):
         self.lock = Lock()
         self.latest_goal = None
         self.previous_goal = None
-        self.min_goal_distance = 0.5  # meters
+        self.min_goal_distance = 2
 
         self.moveit2 = MoveIt2(
             node=self,
@@ -31,9 +31,6 @@ class DynamicGoalNode(Node):
             group_name=robot.MOVE_GROUP_ARM,
             callback_group=self.callback_group,
         )
-
-        # self.moveit2.wait_until_executors_ready()
-        # self.get_logger().info("MoveIt2 action server is ready.")
 
 
         self.quat_xyzw = [0.0, 0.0, 0.0, 1.0]
@@ -52,20 +49,10 @@ class DynamicGoalNode(Node):
         self.goal_thread = Thread(target=self.goal_loop, daemon=True)
         self.goal_thread.start()
 
-    def normalize_point(self, i, j, width=640, height=480, range_val=3.5):
-        x_norm = range_val * (2 * j - (width - 1)) / (width - 1)
-        y_norm = range_val * ((height - 1) - 2 * i) / (height - 1)
-        return x_norm, y_norm
-
     def arm_state_callback(self, msg: DualHandState):
         left = msg.left_hand.center
-        if left.x == 0.0 and left.y == 0.0 and left.z == 0.0:
-            return
 
-        x_norm, y_norm = self.normalize_point(left.y, left.x)
-        z = left.z
-
-        new_position = np.array([x_norm, y_norm, z])
+        new_position = np.array([-left.x, left.y, left.z]) # reverese x-axis to match robot's coordinate system
 
         with self.lock:
             if (
