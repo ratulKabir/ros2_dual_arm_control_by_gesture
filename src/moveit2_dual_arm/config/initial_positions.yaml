@@ -1,0 +1,19 @@
+# Default initial positions for arm_6dof's ros2_control fake system
+
+initial_positions:
+  joint1: 0
+  joint1_1: 0
+  joint2: 0
+  joint2_1: 0
+  joint3: 0
+  joint3_1: 0
+  joint4: 0
+  joint4_1: 0
+  joint5: 0
+  joint5_1: 0
+  joint6: 0
+  joint6_1: 0
+  left_finger_joint: 0
+  left_finger_joint_1: 0
+  right_finger_joint: 0
+  right_finger_joint_1: 0
