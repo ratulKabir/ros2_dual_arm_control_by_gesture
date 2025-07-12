@@ -8,7 +8,7 @@ import numpy as np
 import time
 
 from pymoveit2 import MoveIt2, MoveIt2State
-from control_robot.robots import arm_6dof as robot
+from control_robot.robots import left_arm as robot
 
 from custom_msgs.msg import DualHandState  # Adjust if needed
 
@@ -59,8 +59,8 @@ class DynamicGoalNode(Node):
 
     def arm_state_callback(self, msg: DualHandState):
         left = msg.left_hand.center
-        if left.x == 0.0 and left.y == 0.0 and left.z == 0.0:
-            return
+        # if left.x == 0.0 and left.y == 0.0 and left.z == 0.0:
+        #     return
 
         x_norm, y_norm = self.normalize_point(left.y, left.x)
         z = left.z
