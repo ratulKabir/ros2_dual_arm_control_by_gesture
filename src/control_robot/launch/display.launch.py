@@ -6,7 +6,7 @@ import os
 
 def generate_launch_description():
     pkg_share = FindPackageShare('control_robot')
-    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', '6dof.urdf'])
+    urdf_path = PathJoinSubstitution([pkg_share, 'urdf', 'dual_arm.urdf'])
     # rviz_path = PathJoinSubstitution([pkg_share, 'urdf', 'simple_2dof.rviz'])
 
     return LaunchDescription([
