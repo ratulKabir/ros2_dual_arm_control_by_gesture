@@ -8,7 +8,7 @@ import numpy as np
 import time
 
 from pymoveit2 import MoveIt2, MoveIt2State
-from control_robot.robots import arm_6dof as robot
+from control_robot.robots import arm_6dof_1 as robot
 
 from custom_msgs.msg import DualHandState  # Adjust if needed
 
@@ -50,9 +50,9 @@ class DynamicGoalNode(Node):
         self.goal_thread.start()
 
     def arm_state_callback(self, msg: DualHandState):
-        left = msg.left_hand.center
+        center = msg.right_hand.center
 
-        new_position = np.array([-left.x, left.y, left.z]) # reverese x-axis to match robot's coordinate system
+        new_position = np.array([-center.x, center.y, center.z]) # reverese x-axis to match robot's coordinate system
 
         with self.lock:
             if (

@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'move_to_pose = control_robot.move_to_pose:main',
+            'move_to_pose_r1 = control_robot.move_to_pose_r1:main'
         ],
     },
 )
