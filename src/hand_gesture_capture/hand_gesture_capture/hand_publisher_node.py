@@ -20,50 +20,35 @@ class HandPublisher(Node):
         self.tracker.run()
 
     def publish_dual_hand_state(self, hand_data):
-        # Add debug logging
         self.get_logger().debug(f"Received hand_data: {hand_data}")
         
         msg = DualHandState()
-        
-        # Initialize with empty/default hand states
-        msg.left_hand = HandState()
-        msg.right_hand = HandState()
-        
-        # Set default values
-        msg.left_hand.center = Point(x=0.0, y=0.0, z=0.0)
-        msg.left_hand.is_gripping = False
-        msg.right_hand.center = Point(x=0.0, y=0.0, z=0.0)
-        msg.right_hand.is_gripping = False
+        msg.left_hand = HandState(center=Point(x=0.0, y=0.0, z=0.0), is_gripping=False)
+        msg.right_hand = HandState(center=Point(x=0.0, y=0.0, z=0.0), is_gripping=False)
         
         hands_detected = 0
-        
-        if hand_data:
-            for side in ['Left', 'Right']:
-                if side in hand_data and hand_data[side] is not None:
-                    try:
-                        grip_value = hand_data[side].get('grip')
-                        hand_msg = msg.left_hand if side == 'Left' else msg.right_hand
-                        
-                        if 'center' in hand_data[side] and hand_data[side]['center'] is not None:
-                            center = hand_data[side]['center']
-                            if len(center) >= 2:
-                                hand_msg.center = Point(
-                                    x=float(center[0]),
-                                    y=float(center[1]),
-                                    z=0.0
-                                )
-                                hands_detected += 1
-                                # Log the position being published
-                                self.get_logger().info(f"{side} hand position: x={center[0]:.2f}, y={center[1]:.2f}")
-                        
-                        if grip_value is not None:
-                            hand_msg.is_gripping = bool(grip_value)
-                        else:
-                            hand_msg.is_gripping = False
-                        
-                    except (KeyError, IndexError, ValueError, TypeError) as e:
-                        self.get_logger().warn(f"Error processing {side} hand data: {e}")
-                        continue
+
+        for side in ['Left', 'Right']:
+            if side in hand_data and hand_data[side] is not None:
+                try:
+                    grip_value = hand_data[side].get('grip')
+                    hand_msg = msg.left_hand if side == 'Left' else msg.right_hand
+
+                    if 'center' in hand_data[side] and hand_data[side]['center'] is not None:
+                        center = hand_data[side]['center']
+                        if len(center) >= 2:
+                            hand_msg.center = Point(
+                                x=float(center[0]),
+                                y=float(center[1]),
+                                z=0.0
+                            )
+                            hands_detected += 1
+                            self.get_logger().info(f"{side} hand position: x={center[0]:.2f}, y={center[1]:.2f}")
+                    
+                    hand_msg.is_gripping = bool(grip_value) if grip_value is not None else False
+
+                except (KeyError, IndexError, ValueError, TypeError) as e:
+                    self.get_logger().warn(f"Error processing {side} hand data: {e}")
         
         if hands_detected > 0:
             self.get_logger().info(f"Publishing dual hand state: {hands_detected} hands detected")
@@ -71,21 +56,18 @@ class HandPublisher(Node):
             self.get_logger().debug("Publishing dual hand state: no hands detected")
         
         self.pub.publish(msg)
-        self.get_logger().debug("DualHandState message published successfully")
+
 
 def main(args=None):
+    # Let ROS filter its own args and leave the rest for argparse
     parser = argparse.ArgumentParser(description="ROS2 dual hand state publisher")
     parser.add_argument('--no-vis', action='store_true', help='Disable OpenCV visualization')
-    
-    # Parse only the arguments that belong to this script
-    parsed_args = parser.parse_args()
-    
-    # Initialize rclpy with the original args parameter (or None)
+
+    known_args, _ = parser.parse_known_args()
+
     rclpy.init(args=args)
-    
-    # Use the parsed arguments for your node
-    node = HandPublisher(visualize=not parsed_args.no_vis)
-    
+    node = HandPublisher(visualize=not known_args.no_vis)
+
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
